@@ -6,7 +6,8 @@ function Signup() {
   const [formData, setFormData] = useState({ 
     email: "", 
     password: "",
-    confirmPassword: "" 
+    confirmPassword: "",
+    role: "user" // Default role is user
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -29,10 +30,11 @@ function Signup() {
     setIsLoading(true);
     try {
       // Use direct URL to backend instead of relying on proxy
-      const { email, password } = formData;
+      const { email, password, role } = formData;
       const response = await axios.post("https://zyntic-backend.vercel.app/api/auth/signup", { 
         email, 
-        password 
+        password,
+        role 
       });
       
       console.log("Signup successful:", response.data);
@@ -135,6 +137,28 @@ function Signup() {
                   </div>
 
                   <div className="mb-4">
+                    <label
+                      htmlFor="role"
+                      className="form-label"
+                      style={{ color: "#4a5568" }}>
+                      Account Type
+                    </label>
+                    <select
+                      className="form-select form-select-lg"
+                      id="role"
+                      name="role"
+                      value={formData.role}
+                      onChange={handleChange}
+                    >
+                      <option value="user">Regular User</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                    <div className="form-text text-muted">
+                      Admin users can manage products, regular users can only rate products.
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
                     <button
                       type="submit"
                       className="btn btn-lg w-100"
@@ -149,7 +173,14 @@ function Signup() {
                       onMouseOut={(e) =>
                         (e.target.style.backgroundColor = "rgb(255, 112, 67)")
                       }>
-                      {isLoading ? "Signing up..." : "Sign Up"}
+                      {isLoading ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Signing up...
+                        </>
+                      ) : (
+                        "Sign Up"
+                      )}
                     </button>
                   </div>
                 </form>

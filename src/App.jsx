@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ProductList from "./pages/ProductList";
 import ProductForm from "./pages/ProductForm";
+import ProductDetail from "./pages/ProductDetail"; // Add this import!
 import Home from "./pages/Home";
 import NavBar from "./components/NavBar";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -50,10 +51,10 @@ function App() {
           path="/products"
           element={
             <ProtectedRoute>
-              <div>
-                <NavBar />
+             { <div>
+                {/* <NavBar /> */}
                 <ProductList />
-              </div>
+              </div>}
             </ProtectedRoute>
           }
         />
@@ -65,6 +66,15 @@ function App() {
                 <NavBar />
                 <ProductForm />
               </div>
+            </ProtectedRoute>
+          }
+        />
+        {/* Product detail route */}
+        <Route
+          path="/products/:id"
+          element={
+            <ProtectedRoute>
+              <ProductDetail />
             </ProtectedRoute>
           }
         />
