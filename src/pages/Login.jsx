@@ -1,41 +1,67 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Login() {
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  // Check if user is already authenticated
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/");
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
     
     try {
-      // Use direct URL to backend
-      const response = await axios.post("https://zyntic-backend.vercel.app/api/auth/login", formData);
+      const response = await axios.post(
+        "https://zyntic-backend.vercel.app/api/auth/login", 
+        formData
+      );
       
-      console.log("Login successful");
+      // Store the token in localStorage
       localStorage.setItem("token", response.data.token);
-      if (response.data.user) {
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-      }
       
-      navigate("/products");
+      // Redirect to the home page
+      navigate("/");
     } catch (err) {
-      console.error("Login error details:", err);
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
-      } else if (err.message === "Network Error") {
-        setError("Cannot connect to server. Please check if the server is running.");
+      console.error("Login error:", err);
+      
+      if (err.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        if (err.response.status === 401) {
+          setError("Invalid email or password");
+        } else if (err.response.data && err.response.data.message) {
+          setError(err.response.data.message);
+        } else {
+          setError("Login failed. Please try again.");
+        }
+      } else if (err.request) {
+        // The request was made but no response was received
+        setError("Cannot connect to server. Please check your internet connection.");
       } else {
-        setError("Invalid credentials");
+        // Something happened in setting up the request that triggered an Error
+        setError("An unexpected error occurred.");
       }
     } finally {
       setIsLoading(false);
@@ -44,14 +70,15 @@ function Login() {
 
   return (
     <div 
-  className="min-vh-100 d-flex justify-content-center align-items-center w-100" 
-  style={{ 
-    backgroundColor: "#f7fafc"
-  }}
->
+      className="min-vh-100 d-flex justify-content-center align-items-center w-100" 
+      style={{ 
+        backgroundColor: "#f7fafc",
+        padding: "2rem 0"
+      }}
+    >
       <div className="container">
         <div className="row justify-content-center">
-        <div className="col-12 col-sm-6 col-md-8 col-lg-5">
+          <div className="col-12 col-sm-10 col-md-8 col-lg-6">
             <div className="card border-0 shadow-sm rounded-3">
               <div className="card-body p-4 p-md-5">
                 <h2 className="text-center mb-4" style={{ color: "#2d3748" }}>
@@ -120,7 +147,14 @@ function Login() {
                       onMouseOut={(e) =>
                         (e.target.style.backgroundColor = "rgb(255, 112, 67)")
                       }>
-                      {isLoading ? "Logging in..." : "Login"}
+                      {isLoading ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Logging in...
+                        </>
+                      ) : (
+                        "Login"
+                      )}
                     </button>
                   </div>
                 </form>

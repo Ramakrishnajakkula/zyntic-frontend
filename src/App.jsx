@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,22 +10,50 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ProductList from "./pages/ProductList";
 import ProductForm from "./pages/ProductForm";
+import Home from "./pages/Home";
+import NavBar from "./components/NavBar";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   // Get the base path - use environment variable or default to empty string for local dev
   const basePath = import.meta.env.BASE_URL || "/zyntic-frontend";
   
+  // Check for authentication on initial load
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const currentPath = window.location.pathname;
+    
+    // If user is authenticated and trying to access login/signup, redirect to home
+    if (token && (currentPath.endsWith("/login") || currentPath.endsWith("/signup") || 
+                  currentPath === "/" || currentPath === basePath + "/")) {
+      window.location.href = basePath ? `${basePath}/` : "/";
+    }
+  }, [basePath]);
+  
   return (
     <Router basename={basePath}>
       <Routes>
+        {/* Public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        
+        {/* Protected routes */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/products"
           element={
             <ProtectedRoute>
-              <ProductList />
+              <div>
+                <NavBar />
+                <ProductList />
+              </div>
             </ProtectedRoute>
           }
         />
@@ -33,7 +61,10 @@ function App() {
           path="/products/new"
           element={
             <ProtectedRoute>
-              <ProductForm />
+              <div>
+                <NavBar />
+                <ProductForm />
+              </div>
             </ProtectedRoute>
           }
         />
@@ -41,12 +72,23 @@ function App() {
           path="/products/edit/:id"
           element={
             <ProtectedRoute>
-              <ProductForm />
+              <div>
+                <NavBar />
+                <ProductForm />
+              </div>
             </ProtectedRoute>
           }
         />
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="*" element={<Navigate to="/login" />} />
+        
+        {/* Fallback route - redirect authenticated users to home, others to login */}
+        <Route 
+          path="*" 
+          element={
+            localStorage.getItem("token") 
+              ? <Navigate to="/" /> 
+              : <Navigate to="/login" />
+          } 
+        />
       </Routes>
     </Router>
   );
