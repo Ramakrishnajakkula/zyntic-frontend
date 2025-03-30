@@ -44,12 +44,14 @@ function Login() {
 
   return (
     <div 
-      className="d-flex justify-content-center align-items-center vh-100" 
-      style={{ backgroundColor: "#f7fafc" }}
-    >
+  className="min-vh-100 d-flex justify-content-center align-items-center w-100" 
+  style={{ 
+    backgroundColor: "#f7fafc"
+  }}
+>
       <div className="container">
         <div className="row justify-content-center">
-          <div className="col-12 col-sm-10 col-md-8 col-lg-6">
+        <div className="col-12 col-sm-6 col-md-8 col-lg-5">
             <div className="card border-0 shadow-sm rounded-3">
               <div className="card-body p-4 p-md-5">
                 <h2 className="text-center mb-4" style={{ color: "#2d3748" }}>

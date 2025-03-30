@@ -67,8 +67,8 @@ function ProductList() {
   return (
     <div style={{ backgroundColor: "#f7fafc", minHeight: "100vh", padding: "2rem 0" }}>
       <div className="container">
-        <div className="card border-0 shadow-sm">
-          <div className="card-body p-4">
+        <div className="card border-0 shadow-sm ">
+          <div className="card-body p-4 ">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h2 style={{ color: "#2d3748" }}>Product List</h2>
               <Link 
