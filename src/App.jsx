@@ -13,8 +13,11 @@ import ProductForm from "./pages/ProductForm";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
+  // Get the base path - use environment variable or default to empty string for local dev
+  const basePath = import.meta.env.BASE_URL || "/zyntic-frontend";
+  
   return (
-    <Router>
+    <Router basename={basePath}>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -42,6 +45,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/" element={<Navigate to="/login" />} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>

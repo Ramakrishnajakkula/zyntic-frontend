@@ -113,7 +113,7 @@ function ProductForm() {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
-        await axios.post("https://zyntic-backend.vercel.app//api/products", formData, {
+        await axios.post("https://zyntic-backend.vercel.app/api/products", formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
